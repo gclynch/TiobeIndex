@@ -1,0 +1,59 @@
+﻿@page "/"
+@inject HttpClient Http
+
+<h1>TIOBE index latest</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (data == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Language</th>
+                <th>Rating (%)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var entry in data)
+            {
+                <tr>
+                    <td>@entry.language</td>
+                    <td>@entry.rating</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private TiobeIndexEntry[] data;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // http://localhost:7071/api/TiobeIndex
+            data = await Http.GetFromJsonAsync<TiobeIndexEntry[]>("https://tiobeindexgc.azurewebsites.net/api/tiobeindex");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            throw e;
+        }
+
+    }
+
+    public class TiobeIndexEntry
+    {
+        public string language { get; set; }
+
+        public double rating { get; set; }
+    }
+}
+
+
